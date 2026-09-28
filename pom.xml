@@ -11,8 +11,8 @@
 	<groupId>com.freelance</groupId>
 	<artifactId>freelance-platform</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Freelance Platform</name>
-	<description>Sistema de Freelance para TCC</description>
+	<name>ClickJob Platform</name>
+	<description>Sistema para Freelancers</description>
 	<url/>
 	<licenses>
 		<license/>
