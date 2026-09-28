@@ -140,14 +140,11 @@ class UserControllerTest {
     @DisplayName("Deve deletar um usuário pelo ID")
     void deveDeletarUsuarioPeloId() throws Exception {
 
-        doNothing().when(userService).delete(any(Long.class));
+        doNothing().when(userService).delete(1L);
 
         mockMvc.perform(delete("/api/users/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(userService, times(1)).delete(any(Long.class));
-
         verify(userService, times(1)).delete(1L);
-
     }
 }
