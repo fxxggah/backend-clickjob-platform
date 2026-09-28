@@ -1,5 +1,6 @@
 package com.clickjob.platform.controller;
 
+import com.clickjob.platform.dto.request.ApplicationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.clickjob.platform.config.security.JwtService;
 import com.clickjob.platform.domain.enums.ApplicationStatus;
@@ -41,10 +42,10 @@ class ApplicationControllerTest {
     @Test
     @DisplayName("Deve aplicar um freelancer em um job")
     void deveAplicarUmFreelancerEmUmJob() throws Exception {
-
         Long jobId = 1L;
-
         Long freelancerId = 1L;
+
+        ApplicationRequest request = new ApplicationRequest(jobId);
 
         ApplicationResponse response = ApplicationResponse.builder()
                 .id(1L)
@@ -59,8 +60,9 @@ class ApplicationControllerTest {
         when(applicationService.apply(jobId, freelancerId)).thenReturn(response);
 
         mockMvc.perform(post("/api/applications")
-                .param("jobId", jobId.toString())
-                .param("freelancerId", freelancerId.toString()))
+                        .param("freelancerId", freelancerId.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.jobId").value(jobId))
                 .andExpect(jsonPath("$.freelancerId").value(freelancerId))
@@ -68,7 +70,6 @@ class ApplicationControllerTest {
                 .andExpect(jsonPath("$.freelancerName").value("Gabriel"));
 
         verify(applicationService, times(1)).apply(jobId, freelancerId);
-
     }
 
     @Test
