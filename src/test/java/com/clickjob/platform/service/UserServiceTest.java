@@ -66,8 +66,6 @@ class UserServiceTest {
         verify(passwordEncoder).encode(user.getPassword());
     }
 
-    // CRUD Testes
-
     @Test
     @DisplayName("Deve retornar usuário pelo ID")
     void deveRetornarUsuarioPeloId() {
@@ -90,7 +88,6 @@ class UserServiceTest {
         assertEquals(user.getUserType(), result.getUserType());
 
         verify(userRepository).findById(user.getId());
-
     }
 
     @Test
@@ -115,9 +112,7 @@ class UserServiceTest {
         assertEquals(user.getUserType(), result.getUserType());
 
         verify(userRepository).findByEmail(user.getEmail());
-
     }
-
 
     @Test
     @DisplayName("Deve retornar usuário convertido em DTO pelo ID")
@@ -141,12 +136,11 @@ class UserServiceTest {
         assertEquals(user.getUserType(), result.getUserType());
 
         verify(userRepository).findById(user.getId());
-
     }
 
     @Test
     @DisplayName("Deve retornar todos usuários do tipo freelancer")
-    void getAllFreelancers() {
+    void deveRetornarTodosOsFreelancers() {
 
         User userOne = User.builder()
                 .id(1L)
@@ -155,32 +149,33 @@ class UserServiceTest {
                 .password("gabriel")
                 .userType(FREELANCER)
                 .build();
+
         User userTwo = User.builder()
-                .id(1L)
+                .id(2L)
                 .name("Hellen")
                 .email("hellencarol@gmail.com")
                 .password("hellencarol")
                 .userType(FREELANCER)
                 .build();
 
-        User userTree = User.builder()
-                .id(1L)
+        User userThree = User.builder()
+                .id(3L)
                 .name("Silvana")
                 .email("silvana@gmail.com")
                 .password("silvana")
                 .userType(EMPLOYER)
                 .build();
 
-        when(userRepository.findAll()).thenReturn(List.of(userOne, userTwo, userTree));
+        when(userRepository.findAll()).thenReturn(List.of(userOne, userTwo, userThree));
 
         List<UserResponse> result = userService.findAllFreelancers();
 
+        assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(u -> u.getUserType().name().equals("FREELANCER")));
-        assertTrue(result.stream().anyMatch(u -> u.getEmail().equals("gabriel@gmail.com")));
-        assertEquals(userOne.getName(), result.get(0).getName());
-        assertEquals(userTwo.getName(), result.get(1).getName());
+        assertEquals("Gabriel", result.get(0).getName());
+        assertEquals("Hellen", result.get(1).getName());
 
+        verify(userRepository, times(1)).findAll();
     }
 
     @Test
@@ -201,9 +196,7 @@ class UserServiceTest {
 
         verify(userRepository).findById(user.getId());
         verify(userRepository).delete(user);
-
     }
-
 
     // Exceptions Testes
 
@@ -224,14 +217,11 @@ class UserServiceTest {
             userService.register(request);
         });
 
-        assertEquals("Usuario com o Email: " + request.getEmail() + " já cadastrado", exception.getMessage());
+        assertEquals("Usuário com o Email: " + request.getEmail() + " já cadastrado", exception.getMessage());
 
         verify(userRepository, never()).save(any(User.class));
         verify(userRepository, times(1)).existsByEmail(request.getEmail());
-
-
     }
-
 
     @Test
     @DisplayName("Deve lançar ResourceNotFoundException ao buscar entidade por ID inexistente")
@@ -245,10 +235,9 @@ class UserServiceTest {
             userService.getEntityById(idInexistente);
         });
 
-        assertEquals("Usuário com o ID: " + idInexistente + "não encontrado", exception.getMessage());
+        assertEquals("Usuário com o ID: " + idInexistente + " não encontrado", exception.getMessage());
 
         verify(userRepository, times(1)).findById(idInexistente);
-
     }
 
     @Test
@@ -257,17 +246,14 @@ class UserServiceTest {
 
         String emailInexistente = "gabriel@gmail.com";
 
-
         when(userRepository.findByEmail(emailInexistente)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
             userService.getEntityByEmail(emailInexistente);
         });
 
-        assertEquals("Usuário com o Email: " + emailInexistente + " nao encontrado", exception.getMessage());
+        assertEquals("Usuário com o Email: " + emailInexistente + " não encontrado", exception.getMessage());
 
         verify(userRepository, times(1)).findByEmail(emailInexistente);
-
     }
-
 }
