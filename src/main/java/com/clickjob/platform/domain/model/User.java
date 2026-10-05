@@ -34,10 +34,16 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(columnDefinition = "TEXT")
+    private String aboutMe;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    // Relacionamentos
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Job> jobs = new ArrayList<>();

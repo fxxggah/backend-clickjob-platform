@@ -1,6 +1,7 @@
 package com.clickjob.platform.controller;
 
 import com.clickjob.platform.dto.request.RegisterRequest;
+import com.clickjob.platform.dto.request.UpdateUserRequest;
 import com.clickjob.platform.dto.response.UserResponse;
 import com.clickjob.platform.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +51,18 @@ public class UserController {
     @GetMapping("/freelancers")
     public ResponseEntity<List<UserResponse>> getAllFreelancers() {
         return ResponseEntity.ok(userService.findAllFreelancers());
+    }
+
+    @Operation(summary = "Atualizar perfil", description = "Permite atualizar o telefone e o sobre mim do usuário.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateProfile(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateProfile(id, request));
     }
 
     @Operation(summary = "Deletar um usuário", description = "Remove um usuário do sistema pelo seu ID.")

@@ -3,6 +3,7 @@ package com.clickjob.platform.service;
 import com.clickjob.platform.domain.model.User;
 import com.clickjob.platform.domain.repository.UserRepository;
 import com.clickjob.platform.dto.request.RegisterRequest;
+import com.clickjob.platform.dto.request.UpdateUserRequest;
 import com.clickjob.platform.dto.response.UserResponse;
 import com.clickjob.platform.exception.ResourceAlreadyExistsException;
 import com.clickjob.platform.exception.ResourceNotFoundException;
@@ -68,6 +69,8 @@ public class UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .phone(user.getPhone())
+                .aboutMe(user.getAboutMe())
                 .userType(user.getUserType())
                 .createdAt(user.getCreatedAt())
                 .build();
@@ -77,6 +80,18 @@ public class UserService {
     public void delete(Long id) {
         User user = getEntityById(id);
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public UserResponse updateProfile(Long id, UpdateUserRequest request) {
+        User user = getEntityById(id);
+        
+        user.setPhone(request.getPhone());
+        user.setAboutMe(request.getAboutMe());
+
+        user = userRepository.save(user);
+
+        return toResponse(user);
     }
 
 }
