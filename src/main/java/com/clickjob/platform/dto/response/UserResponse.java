@@ -16,4 +16,5 @@ public class UserResponse {
     private String aboutMe;
     private UserType userType;
     private LocalDateTime createdAt;
+    private boolean active;
 }

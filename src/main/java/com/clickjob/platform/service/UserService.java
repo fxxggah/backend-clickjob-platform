@@ -44,13 +44,23 @@ public class UserService {
     }
 
     public User getEntityById(Long id) {
-        return userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com o ID: " + id + " não encontrado"));
+
+        if (!user.isActive()) {
+            throw new ResourceNotFoundException("Usuário com o ID: " + id + " foi excluído (inativo)");
+        }
+        return user;
     }
 
     public User getEntityByEmail(String email) {
-        return userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário com o Email: " + email + " não encontrado"));
+
+        if (!user.isActive()) {
+            throw new ResourceNotFoundException("Usuário com o Email: " + email + " foi excluído (inativo)");
+        }
+        return user;
     }
 
     public UserResponse findById(Long id) {
@@ -59,7 +69,7 @@ public class UserService {
 
     public List<UserResponse> findAllFreelancers() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getUserType().name().equals("FREELANCER"))
+                .filter(u -> u.getUserType().name().equals("FREELANCER") && u.isActive())
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -73,19 +83,21 @@ public class UserService {
                 .aboutMe(user.getAboutMe())
                 .userType(user.getUserType())
                 .createdAt(user.getCreatedAt())
+                .active(user.isActive())
                 .build();
     }
 
     @Transactional
     public void delete(Long id) {
         User user = getEntityById(id);
-        userRepository.delete(user);
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     @Transactional
     public UserResponse updateProfile(Long id, UpdateUserRequest request) {
         User user = getEntityById(id);
-        
+
         user.setPhone(request.getPhone());
         user.setAboutMe(request.getAboutMe());
 

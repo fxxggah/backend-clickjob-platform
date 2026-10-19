@@ -41,6 +41,10 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String aboutMe;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean active = true;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
