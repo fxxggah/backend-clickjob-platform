@@ -98,6 +98,7 @@ public class UserService {
     public UserResponse updateProfile(Long id, UpdateUserRequest request) {
         User user = getEntityById(id);
 
+        user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setAboutMe(request.getAboutMe());
 
