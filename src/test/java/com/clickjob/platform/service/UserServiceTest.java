@@ -179,8 +179,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Deve deletar usuário pelo ID")
-    void deveDeletarUsuarioPeloId() {
+    @DisplayName("Deve desativar usuário pelo ID")
+    void deveDesativarUsuarioPeloId() {
 
         User user = User.builder()
                 .id(1L)
@@ -188,6 +188,7 @@ class UserServiceTest {
                 .email("gabriel@gmail.com")
                 .password("gabriel")
                 .userType(FREELANCER)
+                .active(true)
                 .build();
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
@@ -195,7 +196,8 @@ class UserServiceTest {
         userService.delete(user.getId());
 
         verify(userRepository).findById(user.getId());
-        verify(userRepository).delete(user);
+        verify(userRepository).save(user);
+        assertFalse(user.isActive());
     }
 
     // Exceptions Testes
